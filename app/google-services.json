@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "225437358554",
+    "firebase_url": "https://firenance-aaab1.firebaseio.com",
+    "project_id": "firenance-aaab1",
+    "storage_bucket": "firenance-aaab1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:225437358554:android:de09dce88c8981c3",
+        "android_client_info": {
+          "package_name": "com.hobby.niwat.firenance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "225437358554-4ermt3th5uggbp5o04smjk15r628ag8l.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "225437358554-4ermt3th5uggbp5o04smjk15r628ag8l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoCjNe97QHwWhO8stZsqh51RxRwOTsu4c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
