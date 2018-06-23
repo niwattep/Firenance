@@ -6,19 +6,17 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.activity_main.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 	private val RC_SIGN_IN = 101
 	private val TAG = "MainActivity"
 
-	var adapter: TransactionAdapter? = null
+	var adapter: TransactionGroupAdapter? = null
 	var query: Query? = null
 	var firestore: FirebaseFirestore? = null
-	val calendar = Calendar.getInstance()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -26,17 +24,17 @@ class MainActivity : AppCompatActivity() {
 
 		initFirestore()
 		initRecyclerView()
+		getCurrentBalance()
 	}
 
 	override fun onStart() {
 		super.onStart()
-		if (shouldStartSignIn()) {
+		if (!isLogin()) {
 			startSignIn()
 			return
 		}
 
 		adapter?.startListening()
-		fillData()
 	}
 
 	override fun onStop() {
@@ -46,65 +44,24 @@ class MainActivity : AppCompatActivity() {
 
 	private fun initFirestore() {
 		firestore = FirebaseFirestore.getInstance()
-		FirebaseAuth.getInstance().currentUser?.let {
+		getFirebaseUser()?.let {
 			val userUid = it.uid
 			firestore?.let {
-				query = it.collection(Database.COL_USER)
+				query = it.collection(Database.COL_USERS)
 						.document(userUid)
-						.collection(Database.COL_TRANSACTION)
-						.whereEqualTo(Transaction.YEAR, calendar.get(Calendar.YEAR))
-						.whereEqualTo(Transaction.MONTH, calendar.get(Calendar.MONTH) + 1)
-						.orderBy(Transaction.DAY, Query.Direction.DESCENDING)
-						.orderBy(Transaction.TIMESTAMP, Query.Direction.DESCENDING)
+						.collection(Database.COL_TRANSACTION_GROUPS)
+						.orderBy(TransactionGroup.VALUE, Query.Direction.ASCENDING)
 			}
 		}
 	}
 
 	private fun initRecyclerView() {
-		adapter = object: TransactionAdapter(query, this) {
-			override fun onDataChanged(documentSnapshots: QuerySnapshot?, e: FirebaseFirestoreException?) {
-				val remaining = calculateRemaining()
-
-				balanceTextView.text = when {
-					remaining >= 0 -> "$$remaining"
-					remaining < 0 -> "-$${-remaining}"
-					else -> "$$remaining"
-				}
-			}
-		}
+		adapter = TransactionGroupAdapter(query, this)
 
 		recyclerView.apply {
 			layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 			adapter = this@MainActivity.adapter
 		}
-	}
-
-	private fun fillData() {
-		val date = SimpleDateFormat("MMM yyyy", Locale.US).format(calendar.time)
-		//dateTextView.text = date
-	}
-
-	private fun calculateRemaining(): Int {
-		val snapshots = adapter?.getSnapshots()
-		var total = 0
-		snapshots?.let {
-			for (snapshot in it) {
-				val transaction = snapshot.toObject(Transaction::class.java)
-				transaction?.let {
-					total = when (it.type) {
-						Transaction.TYPE_INCOME -> total + it.amount
-						Transaction.TYPE_EXPENSE -> total - it.amount
-						else -> total
-					}
-				}
-			}
-		}
-		return total
-	}
-
-	fun onCreateTransactionButtonClicked(type: Int) {
-		val createTransactionDialog = CreateTransactionDialogFragment.newInstance(type)
-		createTransactionDialog.show(supportFragmentManager, CreateTransactionDialogFragment.TAG)
 	}
 
 	private fun startSignIn() {
@@ -120,12 +77,41 @@ class MainActivity : AppCompatActivity() {
 		super.onActivityResult(requestCode, resultCode, data)
 		when (requestCode) {
 			RC_SIGN_IN -> {
-				if (resultCode != RESULT_OK && shouldStartSignIn()) {
+				if (resultCode != RESULT_OK && isLogin()) {
 					startSignIn()
 				}
 			}
 		}
 	}
 
-	private fun shouldStartSignIn() = FirebaseAuth.getInstance().currentUser == null
+	private fun getCurrentBalance() {
+		getFirebaseUser()?.let {
+			val userUid = it.uid
+			firestore?.let {
+				it.collection(Database.COL_USERS)
+						.document(userUid)
+						.collection(Database.DOC_USER_STAT)
+						.document(Database.COL_COMMON)
+						.get().addOnCompleteListener {
+							when {
+								it.isSuccessful && it.result.exists()-> {
+									fillBalancce(it.result.toObject(CommonUserStat::class.java))
+								}
+							}
+						}
+			}
+		}
+	}
+
+	private fun fillBalancce(userStat: CommonUserStat?) {
+		userStat?.let {
+			it.balance?.let {
+				balanceTextView.text = "$${it}"
+			}
+		}
+	}
+
+	private fun isLogin() = FirebaseAuth.getInstance().currentUser != null
+
+	private fun getFirebaseUser() = FirebaseAuth.getInstance().currentUser
 }

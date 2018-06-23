@@ -37,6 +37,7 @@ abstract class FirestoreAdapter<VH : RecyclerView.ViewHolder>(var query: Query?)
 		}
 
 		Log.d(TAG, "onEvent:numChanges:" + documentSnapshots?.documentChanges?.size)
+
 		documentSnapshots?.let {
 			for (change in it.documentChanges) {
 				when (change.type) {
@@ -47,7 +48,7 @@ abstract class FirestoreAdapter<VH : RecyclerView.ViewHolder>(var query: Query?)
 			}
 		}
 
-		onDataChanged(documentSnapshots, e)
+		onDataChanged(documentSnapshots)
 	}
 
 	fun onDocumentAdded(change: DocumentChange) {
@@ -71,7 +72,7 @@ abstract class FirestoreAdapter<VH : RecyclerView.ViewHolder>(var query: Query?)
 		notifyItemRemoved(change.oldIndex)
 	}
 
-	open fun onDataChanged(documentSnapshots: QuerySnapshot?, e: FirebaseFirestoreException?) {}
+	open fun onDataChanged(documentSnapshots: QuerySnapshot?) {}
 
 	fun startListening() {
 		query?.let {
