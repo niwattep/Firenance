@@ -1,4 +1,4 @@
-package com.hobby.niwat.firenance
+package com.hobby.niwat.firenance.model
 
 class TransactionGroup(
 		val name: String? = "",

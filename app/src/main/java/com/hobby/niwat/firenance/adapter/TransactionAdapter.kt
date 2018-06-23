@@ -1,4 +1,4 @@
-package com.hobby.niwat.firenance
+package com.hobby.niwat.firenance.adapter
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
@@ -8,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
+import com.hobby.niwat.firenance.R
+import com.hobby.niwat.firenance.model.Transaction
 import kotlinx.android.synthetic.main.view_transaction_item.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 open class TransactionAdapter(query: Query?, val context: Context?) : FirestoreAdapter<TransactionAdapter.TransactionViewHolder>(query) {
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder{
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
 		return TransactionViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_transaction_item, parent, false))
 	}
 

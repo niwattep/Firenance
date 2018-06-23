@@ -1,4 +1,4 @@
-package com.hobby.niwat.firenance
+package com.hobby.niwat.firenance.model
 
 class CommonUserStat(
 		val balance: Int? = 0,

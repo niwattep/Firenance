@@ -1,4 +1,4 @@
-package com.hobby.niwat.firenance
+package com.hobby.niwat.firenance.adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
+import com.hobby.niwat.firenance.R
+import com.hobby.niwat.firenance.model.TransactionGroup
 import kotlinx.android.synthetic.main.view_transaction_summary_card.view.*
 
 open class TransactionGroupAdapter(query: Query?, val context: Context?) : FirestoreAdapter<TransactionGroupAdapter.TransactionGroupViewHolder>(query) {

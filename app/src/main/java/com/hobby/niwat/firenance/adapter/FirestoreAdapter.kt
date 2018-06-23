@@ -1,4 +1,4 @@
-package com.hobby.niwat.firenance
+package com.hobby.niwat.firenance.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.util.Log

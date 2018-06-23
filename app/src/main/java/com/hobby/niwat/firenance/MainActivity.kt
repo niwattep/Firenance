@@ -8,6 +8,9 @@ import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.hobby.niwat.firenance.adapter.TransactionGroupAdapter
+import com.hobby.niwat.firenance.model.CommonUserStat
+import com.hobby.niwat.firenance.model.TransactionGroup
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
