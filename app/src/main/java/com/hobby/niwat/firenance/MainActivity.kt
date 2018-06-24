@@ -1,31 +1,25 @@
 package com.hobby.niwat.firenance
 
-import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import android.util.Log
 import com.google.firebase.firestore.Query
 import com.hobby.niwat.firenance.adapter.TransactionGroupAdapter
 import com.hobby.niwat.firenance.model.CommonUserStat
 import com.hobby.niwat.firenance.model.TransactionGroup
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
-	private val RC_SIGN_IN = 101
+class MainActivity : AbstractFirestoreActivity() {
 	private val TAG = "MainActivity"
 
 	var adapter: TransactionGroupAdapter? = null
 	var query: Query? = null
-	var firestore: FirebaseFirestore? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		initFirestore()
+		createQuery()
 		initRecyclerView()
 		getCurrentBalance()
 	}
@@ -45,8 +39,7 @@ class MainActivity : AppCompatActivity() {
 		adapter?.stopListening()
 	}
 
-	private fun initFirestore() {
-		firestore = FirebaseFirestore.getInstance()
+	private fun createQuery() {
 		getFirebaseUser()?.let {
 			val userUid = it.uid
 			firestore?.let {
@@ -59,31 +52,11 @@ class MainActivity : AppCompatActivity() {
 	}
 
 	private fun initRecyclerView() {
-		adapter = TransactionGroupAdapter(query, this)
+		adapter = TransactionGroupAdapter(query, this, getFirebaseUser()?.uid)
 
 		recyclerView.apply {
 			layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 			adapter = this@MainActivity.adapter
-		}
-	}
-
-	private fun startSignIn() {
-		val intent = AuthUI.getInstance().createSignInIntentBuilder()
-				.setAvailableProviders(listOf(AuthUI.IdpConfig.EmailBuilder().build()))
-				.setIsSmartLockEnabled(false)
-				.build()
-
-		startActivityForResult(intent, RC_SIGN_IN)
-	}
-
-	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-		super.onActivityResult(requestCode, resultCode, data)
-		when (requestCode) {
-			RC_SIGN_IN -> {
-				if (resultCode != RESULT_OK && isLogin()) {
-					startSignIn()
-				}
-			}
 		}
 	}
 
@@ -93,28 +66,24 @@ class MainActivity : AppCompatActivity() {
 			firestore?.let {
 				it.collection(Database.COL_USERS)
 						.document(userUid)
-						.collection(Database.DOC_USER_STAT)
+						.collection(Database.COL_USER_STAT)
 						.document(Database.COL_COMMON)
-						.get().addOnCompleteListener {
-							when {
-								it.isSuccessful && it.result.exists()-> {
-									fillBalancce(it.result.toObject(CommonUserStat::class.java))
-								}
+						.addSnapshotListener { snapshot, e ->
+							if (e == null) {
+								fillBalance(snapshot?.toObject(CommonUserStat::class.java))
+							} else {
+								Log.e(TAG, "error getting current balance.")
 							}
 						}
 			}
 		}
 	}
 
-	private fun fillBalancce(userStat: CommonUserStat?) {
+	private fun fillBalance(userStat: CommonUserStat?) {
 		userStat?.let {
 			it.balance?.let {
 				balanceTextView.text = "$${it}"
 			}
 		}
 	}
-
-	private fun isLogin() = FirebaseAuth.getInstance().currentUser != null
-
-	private fun getFirebaseUser() = FirebaseAuth.getInstance().currentUser
 }

@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.hobby.niwat.firenance.R
+import com.hobby.niwat.firenance.TransactionGroupActivity
 import com.hobby.niwat.firenance.model.TransactionGroup
 import kotlinx.android.synthetic.main.view_transaction_summary_card.view.*
 
-open class TransactionGroupAdapter(query: Query?, val context: Context?) : FirestoreAdapter<TransactionGroupAdapter.TransactionGroupViewHolder>(query) {
+open class TransactionGroupAdapter(query: Query?, val context: Context?, val userUid: String?) : FirestoreAdapter<TransactionGroupAdapter.TransactionGroupViewHolder>(query) {
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
 			TransactionGroupViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_transaction_summary_card, parent, false))
@@ -23,6 +24,7 @@ open class TransactionGroupAdapter(query: Query?, val context: Context?) : Fires
 	inner class TransactionGroupViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 		fun bind(data: DocumentSnapshot, position: Int) {
 			val transactionGroup = data.toObject(TransactionGroup::class.java)
+			val docName = data.id
 			transactionGroup?.let {
 				itemView.apply {
 					headerText.text = it.name ?: ""
@@ -30,6 +32,12 @@ open class TransactionGroupAdapter(query: Query?, val context: Context?) : Fires
 					actualAmountText.text = it.actual?.toString() ?: ""
 					targetAmountLabel.text = it.targetText ?: ""
 					targetAmountText.text = it.target?.toString() ?: ""
+
+					val groupName = it.name
+					val groupValue = it.value
+					headerText.setOnClickListener {
+						context.startActivity(TransactionGroupActivity.createIntent(context, userUid, docName, groupName, groupValue))
+					}
 				}
 			}
 		}

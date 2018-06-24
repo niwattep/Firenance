@@ -1,13 +1,15 @@
 package com.hobby.niwat.firenance.model
 
+import java.io.Serializable
+
 class TransactionGroup(
 		val name: String? = "",
 		val actual: Int? = 0,
 		val target: Int? = 0,
 		val actualText: String? = "",
 		val targetText: String? = "",
-		val value: Int? = -1
-) {
+		val value: Int? = -1) : Serializable {
+
 	companion object {
 		const val NAME = "name"
 		const val ACTUAL = "actual"

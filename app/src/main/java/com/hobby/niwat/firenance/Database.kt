@@ -6,6 +6,6 @@ class Database {
 		const val COL_TRANSACTION_GROUPS = "transaction-groups"
 		const val COL_USERS = "users"
 		const val COL_COMMON = "common"
-		const val DOC_USER_STAT = "user-stat"
+		const val COL_USER_STAT = "user-stat"
 	}
 }

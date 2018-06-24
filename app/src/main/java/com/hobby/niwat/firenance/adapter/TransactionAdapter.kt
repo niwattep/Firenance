@@ -1,7 +1,6 @@
 package com.hobby.niwat.firenance.adapter
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -27,26 +26,8 @@ open class TransactionAdapter(query: Query?, val context: Context?) : FirestoreA
 		fun bind(data: DocumentSnapshot, position: Int) {
 			val transaction = data.toObject(Transaction::class.java)
 			transaction?.let {
-				val type = it.type
-				val amountText = when (type) {
-					Transaction.TYPE_INCOME -> "$${it.amount}"
-					Transaction.TYPE_EXPENSE -> "-$${it.amount}"
-					else -> "$${it.amount}"
-				}
-
-				itemView.amountTextView.text = amountText
-
-				context?.let {
-					when (type) {
-						1 -> ContextCompat.getColor(it, R.color.green)
-						2 -> ContextCompat.getColor(it, R.color.red)
-						else -> 0
-					}
-				}?.let {
-					itemView.amountTextView.setTextColor(it)
-				}
-
-				val date = SimpleDateFormat("EEEE dd 'at' HH:mm", Locale.US).format(it.timeStamp)
+				itemView.amountTextView.text = "$${it.amount}"
+				val date = SimpleDateFormat("EEEE dd 'at' HH:mm", Locale.US).format(it.timestamp)
 				itemView.dateTimeTextView.text = date
 
 				if (it.note.isNotBlank()) {
