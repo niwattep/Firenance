@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="New Transaction"/>
+
+    <TextView
+        android:id="@+id/groupLabelTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/prompt"
+        app:fontFamily="@font/prompt"
+        android:textColor="@color/gray_text"
+        android:textSize="24sp"
+        tools:text="Income"/>
+
+    <TextView
+        android:id="@+id/amountTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/prompt"
+        app:fontFamily="@font/prompt"
+        android:textColor="@color/gray_text"
+        android:textSize="48sp"
+        android:maxLines="1"
+        android:gravity="end"/>
+
+    <EditText
+        android:id="@+id/noteEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/prompt"
+        app:fontFamily="@font/prompt"
+        android:textColor="@color/gray_text"
+        android:maxLines="1" />
+
+    <com.hobby.niwat.numberkeyboard.NumberKeyboardView
+        android:id="@+id/numberKeyboardView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.hobby.niwat.numberkeyboard.NumberKeyboardView>
+
+</LinearLayout>

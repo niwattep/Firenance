@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#F2C94C</color>
+    <color name="colorAccent">#F2C94C</color>
     <color name="colorPrimaryDark">#F2994A</color>
-    <color name="colorAccent">#F2994A</color>
+    <color name="colorPrimary">#F2994A</color>
     <color name="orange">#F2994A</color>
     <color name="white">#FFFFFF</color>
     <color name="gray_text">#4F4F4F</color>
+    <color name="gray_text_2">#828282</color>
+    <color name="gray_text_3">#E0E0E0</color>
     <color name="green">#54BE2F</color>
     <color name="red">#EB5757</color>
 </resources>

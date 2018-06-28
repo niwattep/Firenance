@@ -10,7 +10,7 @@ class Transaction(
 		val month: Int = 0,
 		val year: Int = 0,
 		val timestamp: Date = Date(),
-		val group: Int = 0) {
+		val group: String = "") {
 
 	companion object {
 		const val AMOUNT = "amount"

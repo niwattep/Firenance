@@ -13,7 +13,6 @@ import kotlinx.android.synthetic.main.activity_transaction_group.*
 
 class TransactionGroupActivity : AbstractFirestoreActivity() {
 
-	private val TAG = "TransactionGroupAct"
 	private var titleText: String? = ""
 	private var groupDocName: String? = ""
 	private var groupValue: Int? = 0
@@ -22,14 +21,13 @@ class TransactionGroupActivity : AbstractFirestoreActivity() {
 	private var adapter: TransactionAdapter? = null
 
 	companion object {
-		private const val EXTRA_USER_UID = "extra-user-uid"
 		private const val EXTRA_TRANSACTION_GROUP_DOC_NAME = "transaction-group-doc-name"
 		private const val EXTRA_TRANSACTION_GROUP_NAME = "transaction-group-name"
 		private const val EXTRA_TRANSACTION_GROUP_VALUE = "transaction-group-value"
+		private const val TAG = "TransactionGroupAct"
 
-		fun createIntent(context: Context, userUid: String?, groupDocName: String?, groupName: String?, groupValue: Int?) = Intent(context, TransactionGroupActivity::class.java).apply {
+		fun createIntent(context: Context, groupDocName: String?, groupName: String?, groupValue: Int?) = Intent(context, TransactionGroupActivity::class.java).apply {
 			putExtras(Bundle().apply {
-				putString(EXTRA_USER_UID, userUid)
 				groupDocName?.let { putString(EXTRA_TRANSACTION_GROUP_DOC_NAME, it) }
 				groupName?.let { putString(EXTRA_TRANSACTION_GROUP_NAME, it) }
 				groupValue?.let { putInt(EXTRA_TRANSACTION_GROUP_VALUE, it) }
@@ -76,8 +74,6 @@ class TransactionGroupActivity : AbstractFirestoreActivity() {
 	}
 
 	private fun extractExtras() {
-		titleText = intent.extras.getString(EXTRA_TRANSACTION_GROUP_NAME)
-		groupDocName = intent.extras.getString(EXTRA_TRANSACTION_GROUP_DOC_NAME)
 		intent.extras.let {
 			titleText = it.getString(EXTRA_TRANSACTION_GROUP_NAME, "")
 			groupDocName = it.getString(EXTRA_TRANSACTION_GROUP_DOC_NAME, "")
@@ -92,7 +88,7 @@ class TransactionGroupActivity : AbstractFirestoreActivity() {
 				query = it.collection(Database.COL_USERS)
 						.document(userUid)
 						.collection(Database.COL_TRANSACTIONS)
-						.whereEqualTo(Transaction.GROUP, groupValue)
+						.whereEqualTo(Transaction.GROUP, groupDocName)
 						.orderBy(Transaction.TIMESTAMP, Query.Direction.DESCENDING)
 			}
 		}

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
+import com.hobby.niwat.firenance.NewTransactionActivity
 import com.hobby.niwat.firenance.R
 import com.hobby.niwat.firenance.TransactionGroupActivity
 import com.hobby.niwat.firenance.model.TransactionGroup
@@ -36,7 +37,11 @@ open class TransactionGroupAdapter(query: Query?, val context: Context?, val use
 					val groupName = it.name
 					val groupValue = it.value
 					headerText.setOnClickListener {
-						context.startActivity(TransactionGroupActivity.createIntent(context, userUid, docName, groupName, groupValue))
+						context.startActivity(TransactionGroupActivity.createIntent(context, docName, groupName, groupValue))
+					}
+
+					addButton.setOnClickListener {
+						context.startActivity(NewTransactionActivity.createIntent(context, groupValue, groupName, docName))
 					}
 				}
 			}

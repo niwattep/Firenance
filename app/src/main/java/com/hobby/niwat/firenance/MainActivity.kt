@@ -10,10 +10,13 @@ import com.hobby.niwat.firenance.model.TransactionGroup
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AbstractFirestoreActivity() {
-	private val TAG = "MainActivity"
 
 	var adapter: TransactionGroupAdapter? = null
 	var query: Query? = null
+
+	companion object {
+		private const val TAG = "MainActivity"
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
