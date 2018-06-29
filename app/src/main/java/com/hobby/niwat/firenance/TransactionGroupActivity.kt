@@ -87,8 +87,9 @@ class TransactionGroupActivity : AbstractFirestoreActivity() {
 			firestore?.let {
 				query = it.collection(Database.COL_USERS)
 						.document(userUid)
+						.collection(Database.COL_TRANSACTION_GROUPS)
+						.document(groupDocName ?: "")
 						.collection(Database.COL_TRANSACTIONS)
-						.whereEqualTo(Transaction.GROUP, groupDocName)
 						.orderBy(Transaction.TIMESTAMP, Query.Direction.DESCENDING)
 			}
 		}
@@ -128,9 +129,9 @@ class TransactionGroupActivity : AbstractFirestoreActivity() {
 
 	private fun fillHeader(transactionGroup: TransactionGroup?) {
 		transactionGroup?.let {
-			actualAmountText.text = it.actual?.toString() ?: ""
+			actualAmountText.text = it.actual?.let { "$$it" } ?: ""
 			actualAmountLabel.text = it.actualText ?: ""
-			targetAmountText.text = it.target?.toString() ?: ""
+			targetAmountText.text = it.target?.let { "$$it" } ?: ""
 			targetAmountLabel.text = it.targetText ?: ""
 		}
 	}

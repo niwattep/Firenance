@@ -3,8 +3,11 @@ package com.hobby.niwat.firenance
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
+import com.hobby.niwat.firenance.model.Transaction
 import com.hobby.niwat.numberkeyboard.NumberKeyboardView
 import kotlinx.android.synthetic.main.activity_new_transaction.*
+import java.util.*
 
 class NewTransactionActivity : AbstractFirestoreActivity() {
 
@@ -64,36 +67,81 @@ class NewTransactionActivity : AbstractFirestoreActivity() {
 		}
 	}
 
-	private fun createNewTransaction() {
-
+	private fun getTransaction(): Transaction? {
+		if (amount.isNotBlank()) {
+			val today = Calendar.getInstance()
+			val day = today.get(Calendar.DAY_OF_MONTH)
+			val month = today.get(Calendar.MONTH) + 1
+			val year = today.get(Calendar.YEAR)
+			val transaction = groupDocName?.let {
+				Transaction().apply {
+					amount = this@NewTransactionActivity.amount.toInt()
+					note = noteEditText.text.toString()
+					this.day = day
+					this.month = month
+					this.year = year
+					timestamp = today.time
+					group = it
+				}
+			}
+			return transaction
+		}
+		return null
 	}
 
-	inner class OnNumberPress(): NumberKeyboardView.OnNumberClickListener {
+	private fun createNewTransaction(transaction: Transaction?) {
+		getFirebaseUser()?.let {
+			val userUid = it.uid
+			groupDocName?.let { docName ->
+				transaction?.let { transaction ->
+					firestore?.let {
+						it.collection(Database.COL_USERS)
+								.document(userUid)
+								.collection(Database.COL_TRANSACTION_GROUPS)
+								.document(docName)
+								.collection(Database.COL_TRANSACTIONS)
+								.add(transaction)
+								.addOnCompleteListener {
+									if (it.isSuccessful) {
+										finish()
+									} else {
+										Toast.makeText(this, "Error create new transaction", Toast.LENGTH_LONG).show()
+									}
+								}
+					}
+				}
+
+			}
+
+		}
+	}
+
+	inner class OnNumberPress: NumberKeyboardView.OnNumberClickListener {
 		override fun onNumberClick(number: Int) {
 			if (amount.length <= MAX_NUMBER_LENGHT) {
-				amountTextView.let {
-					it.append(number.toString())
-					amount = it.text.toString()
+				amount += number.toString()
+				if (amount.isNotBlank()) {
+					amountTextView.text = "$$amount"
 				}
 			}
 		}
 	}
 
-	inner class OnBackspacePress(): NumberKeyboardView.OnBackSpaceClickListener {
+	inner class OnBackspacePress: NumberKeyboardView.OnBackSpaceClickListener {
 		override fun onBackSpaceClick() {
 			amount = amount.let {
 				if (it.isNotEmpty()) {
 					it.subSequence(0, it.lastIndex).toString()
 				} else ""
 			}
-			amountTextView.text = amount
+			amountTextView.text = if (amount.isNotBlank()) "$$amount" else ""
 		}
 
 	}
 
-	inner class OnDonePress(): NumberKeyboardView.OnDoneClickListener {
+	inner class OnDonePress: NumberKeyboardView.OnDoneClickListener {
 		override fun onDoneClick() {
-			createNewTransaction()
+			createNewTransaction(getTransaction())
 		}
 
 	}

@@ -4,13 +4,13 @@ import java.util.*
 
 
 class Transaction(
-		val amount: Int = 0,
-		val note: String = "",
-		val day: Int = 0,
-		val month: Int = 0,
-		val year: Int = 0,
-		val timestamp: Date = Date(),
-		val group: String = "") {
+		var amount: Int = 0,
+		var note: String = "",
+		var day: Int = 0,
+		var month: Int = 0,
+		var year: Int = 0,
+		var timestamp: Date = Date(),
+		var group: String = "") {
 
 	companion object {
 		const val AMOUNT = "amount"

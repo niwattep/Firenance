@@ -30,9 +30,9 @@ open class TransactionGroupAdapter(query: Query?, val context: Context?, val use
 				itemView.apply {
 					headerText.text = it.name ?: ""
 					actualAmountLabel.text = it.actualText ?: ""
-					actualAmountText.text = it.actual?.toString() ?: ""
+					actualAmountText.text = it.actual?.let { "$${it}" } ?: ""
 					targetAmountLabel.text = it.targetText ?: ""
-					targetAmountText.text = it.target?.toString() ?: ""
+					targetAmountText.text = it.target?.let { "$${it}" } ?: ""
 
 					val groupName = it.name
 					val groupValue = it.value

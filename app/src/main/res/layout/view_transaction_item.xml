@@ -12,12 +12,14 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/prompt"
+        app:fontFamily="@font/prompt"
+        android:textColor="@color/gray_text"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="+$500"
-        tools:textColor="@color/red" />
+        tools:text="$500" />
 
     <TextView
         android:id="@+id/dateTimeTextView"
@@ -25,6 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/prompt"
+        app:fontFamily="@font/prompt"
         android:textColor="@color/gray_text"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/noteTextView"
@@ -41,6 +45,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:maxLines="1"
+        android:fontFamily="@font/prompt"
+        app:fontFamily="@font/prompt"
         android:textColor="@color/gray_text"
         android:textSize="@dimen/text_size_small"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -56,6 +62,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/note_label"
+        android:fontFamily="@font/prompt"
+        app:fontFamily="@font/prompt"
         android:textColor="@color/gray_text"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
