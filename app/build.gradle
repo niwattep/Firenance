@@ -35,7 +35,6 @@ dependencies {
     // Firebase
     implementation 'com.google.firebase:firebase-firestore:17.0.1'
     implementation 'com.firebaseui:firebase-ui-auth:4.0.0'
-    implementation project(':numberkeyboard-release')
 }
 
 apply plugin: 'com.google.gms.google-services'

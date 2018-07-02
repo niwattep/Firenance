@@ -3,13 +3,13 @@ package com.hobby.niwat.firenance
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.hobby.niwat.firenance.model.Transaction
-import com.hobby.niwat.numberkeyboard.NumberKeyboardView
 import kotlinx.android.synthetic.main.activity_new_transaction.*
 import java.util.*
 
-class NewTransactionActivity : AbstractFirestoreActivity() {
+class NewTransactionActivity : AbstractFirestoreActivity(), NumberKeyboardView.OnKeyPressedListener {
 
 	private var groupName: String? = null
 	private var groupDocName: String? = null
@@ -60,11 +60,7 @@ class NewTransactionActivity : AbstractFirestoreActivity() {
 	}
 
 	private fun setupKeyboard() {
-		numberKeyboardView.apply {
-			mNumberClickListener = OnNumberPress()
-			mBackSpaceClickListener = OnBackspacePress()
-			mDoneClickListener = OnDonePress()
-		}
+		numberKeyboardView.setOnKeyPressedListener(this)
 	}
 
 	private fun getTransaction(): Transaction? {
@@ -73,7 +69,7 @@ class NewTransactionActivity : AbstractFirestoreActivity() {
 			val day = today.get(Calendar.DAY_OF_MONTH)
 			val month = today.get(Calendar.MONTH) + 1
 			val year = today.get(Calendar.YEAR)
-			val transaction = groupDocName?.let {
+			return groupDocName?.let {
 				Transaction().apply {
 					amount = this@NewTransactionActivity.amount.toInt()
 					note = noteEditText.text.toString()
@@ -84,14 +80,13 @@ class NewTransactionActivity : AbstractFirestoreActivity() {
 					group = it
 				}
 			}
-			return transaction
 		}
 		return null
 	}
 
 	private fun createNewTransaction(transaction: Transaction?) {
-		getFirebaseUser()?.let {
-			val userUid = it.uid
+		showLoading()
+		getFirebaseUser()?.uid?.let { userUid ->
 			groupDocName?.let { docName ->
 				transaction?.let { transaction ->
 					firestore?.let {
@@ -102,6 +97,7 @@ class NewTransactionActivity : AbstractFirestoreActivity() {
 								.collection(Database.COL_TRANSACTIONS)
 								.add(transaction)
 								.addOnCompleteListener {
+									hideLoading()
 									if (it.isSuccessful) {
 										finish()
 									} else {
@@ -116,33 +112,39 @@ class NewTransactionActivity : AbstractFirestoreActivity() {
 		}
 	}
 
-	inner class OnNumberPress: NumberKeyboardView.OnNumberClickListener {
-		override fun onNumberClick(number: Int) {
-			if (amount.length <= MAX_NUMBER_LENGHT) {
-				amount += number.toString()
-				if (amount.isNotBlank()) {
-					amountTextView.text = "$$amount"
-				}
+	override fun onNumberPressed(number: Int) {
+		if (amount.length <= MAX_NUMBER_LENGHT) {
+			amount += number.toString()
+			if (amount.isNotBlank()) {
+				amountTextView.text = "$$amount"
 			}
 		}
 	}
 
-	inner class OnBackspacePress: NumberKeyboardView.OnBackSpaceClickListener {
-		override fun onBackSpaceClick() {
-			amount = amount.let {
-				if (it.isNotEmpty()) {
-					it.subSequence(0, it.lastIndex).toString()
-				} else ""
-			}
-			amountTextView.text = if (amount.isNotBlank()) "$$amount" else ""
+	override fun onBackSpacePressed() {
+		amount = amount.let {
+			if (it.isNotEmpty()) {
+				it.subSequence(0, it.lastIndex).toString()
+			} else ""
 		}
-
+		amountTextView.text = if (amount.isNotBlank()) "$$amount" else ""
 	}
 
-	inner class OnDonePress: NumberKeyboardView.OnDoneClickListener {
-		override fun onDoneClick() {
-			createNewTransaction(getTransaction())
-		}
+	override fun onDonePressed() {
+		createNewTransaction(getTransaction())
+	}
 
+	private fun showLoading() {
+		if (!progressBar.isShown) {
+			progressBar.visibility = View.VISIBLE
+			loadingBackgroundView.visibility = View.VISIBLE
+		}
+	}
+
+	private fun hideLoading() {
+		if (progressBar.isShown) {
+			progressBar.visibility = View.INVISIBLE
+			loadingBackgroundView.visibility = View.INVISIBLE
+		}
 	}
 }

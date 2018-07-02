@@ -69,8 +69,6 @@ class MainActivity : AbstractFirestoreActivity() {
 			firestore?.let {
 				it.collection(Database.COL_USERS)
 						.document(userUid)
-						.collection(Database.COL_USER_STAT)
-						.document(Database.COL_COMMON)
 						.addSnapshotListener { snapshot, e ->
 							if (e == null) {
 								fillBalance(snapshot?.toObject(CommonUserStat::class.java))

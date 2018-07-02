@@ -36,7 +36,7 @@ abstract class AbstractFirestoreActivity : AppCompatActivity() {
 		super.onActivityResult(requestCode, resultCode, data)
 		when (requestCode) {
 			RC_SIGN_IN -> {
-				if (resultCode != RESULT_OK && isLogin()) {
+				if (resultCode != RESULT_OK && !isLogin()) {
 					startSignIn()
 				}
 			}
