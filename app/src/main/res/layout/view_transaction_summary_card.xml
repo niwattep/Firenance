@@ -11,91 +11,112 @@
     android:background="@drawable/bg_card_round"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/headerText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:fontFamily="@font/prompt"
-        android:textColor="@color/gray_text"
-        android:textSize="18sp"
-        android:drawableRight="@drawable/ic_round_navigate_next_24px"
-        tools:text="Summary"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        android:gravity="bottom">
+        android:orientation="vertical"
+        android:background="?selectableItemBackground">
+
+        <TextView
+            android:id="@+id/headerText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/prompt"
+            android:textColor="@color/gray_text"
+            android:textSize="18sp"
+            android:drawableRight="@drawable/ic_round_navigate_next_24px"
+            tools:text="Summary"/>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="bottom">
 
-            <TextView
-                android:id="@+id/actualAmountText"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/prompt"
-                android:textColor="@color/gray_text"
-                android:textSize="24sp"
-                tools:text="20,000"/>
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/actualAmountLabel"
+                <TextView
+                    android:id="@+id/actualAmountText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/prompt"
+                    android:textColor="@color/gray_text"
+                    android:textSize="24sp"
+                    tools:text="20,000"/>
+
+                <TextView
+                    android:id="@+id/actualAmountLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/prompt"
+                    android:textColor="@color/gray_text_2"
+                    tools:text="Actual"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/prompt"
-                android:textColor="@color/gray_text_2"
-                tools:text="Actual"/>
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/targetAmountText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/prompt"
+                    android:textColor="@color/gray_text"
+                    android:textSize="18sp"
+                    tools:text="20,000"/>
+
+                <TextView
+                    android:id="@+id/targetAmountLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/prompt"
+                    android:textColor="@color/gray_text_2"
+                    tools:text="Actual"/>
+            </LinearLayout>
+
         </LinearLayout>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+        <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:rcRadius="16dp"
+            app:rcProgressColor="@color/colorAccent"
+            app:rcBackgroundColor="@color/gray_text_3" />
 
-        <LinearLayout
+        <Button
+            android:id="@+id/addButton"
+            android:theme="@style/AppTheme.RippleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/targetAmountText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/prompt"
-                android:textColor="@color/gray_text"
-                android:textSize="18sp"
-                tools:text="20,000"/>
-
-            <TextView
-                android:id="@+id/targetAmountLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/prompt"
-                android:textColor="@color/gray_text_2"
-                tools:text="Actual"/>
-        </LinearLayout>
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="end"
+            android:fontFamily="@font/prompt"
+            android:text="@string/add"
+            android:textColor="@color/white"
+            tools:text="Add"/>
 
     </LinearLayout>
-    <Button
-        android:id="@+id/addButton"
-        style="@style/Base.Widget.AppCompat.Button.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:layout_gravity="end"
-        android:backgroundTint="@color/colorPrimary"
-        android:fontFamily="@font/prompt"
-        android:text="@string/add"
-        tools:text="Add"/>
+
 </LinearLayout>

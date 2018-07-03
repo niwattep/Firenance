@@ -3,6 +3,8 @@ package com.hobby.niwat.firenance
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import com.google.firebase.firestore.Query
 import com.hobby.niwat.firenance.adapter.TransactionGroupAdapter
 import com.hobby.niwat.firenance.model.CommonUserStat
@@ -22,6 +24,7 @@ class MainActivity : AbstractFirestoreActivity() {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
+		setSupportActionBar(toolbar)
 		createQuery()
 		initRecyclerView()
 		getCurrentBalance()
@@ -55,7 +58,7 @@ class MainActivity : AbstractFirestoreActivity() {
 	}
 
 	private fun initRecyclerView() {
-		adapter = TransactionGroupAdapter(query, this, getFirebaseUser()?.uid)
+		adapter = TransactionGroupAdapter(query, getFirebaseUser()?.uid)
 
 		recyclerView.apply {
 			layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -83,8 +86,23 @@ class MainActivity : AbstractFirestoreActivity() {
 	private fun fillBalance(userStat: CommonUserStat?) {
 		userStat?.let {
 			it.balance?.let {
-				balanceTextView.text = "$${it}"
+				balanceTextView.text = "${getString(R.string.currency)}${it}"
 			}
 		}
+	}
+
+	override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+		menuInflater.inflate(R.menu.main_menu, menu)
+		return true
+	}
+
+	override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+		when (item?.itemId) {
+			R.id.logout -> {
+				logout()
+				startSignIn()
+			}
+		}
+		return super.onOptionsItemSelected(item)
 	}
 }

@@ -64,7 +64,7 @@ class NewTransactionActivity : AbstractFirestoreActivity(), NumberKeyboardView.O
 	}
 
 	private fun getTransaction(): Transaction? {
-		if (amount.isNotBlank()) {
+		if (amount.isNotBlank() && amount.isValidAmount()) {
 			val today = Calendar.getInstance()
 			val day = today.get(Calendar.DAY_OF_MONTH)
 			val month = today.get(Calendar.MONTH) + 1
@@ -89,6 +89,7 @@ class NewTransactionActivity : AbstractFirestoreActivity(), NumberKeyboardView.O
 		getFirebaseUser()?.uid?.let { userUid ->
 			groupDocName?.let { docName ->
 				transaction?.let { transaction ->
+					hideInvalidAmountError()
 					firestore?.let {
 						it.collection(Database.COL_USERS)
 								.document(userUid)
@@ -105,6 +106,9 @@ class NewTransactionActivity : AbstractFirestoreActivity(), NumberKeyboardView.O
 									}
 								}
 					}
+				} ?: run {
+					showInvalidAmountError()
+					hideLoading()
 				}
 
 			}
@@ -116,7 +120,7 @@ class NewTransactionActivity : AbstractFirestoreActivity(), NumberKeyboardView.O
 		if (amount.length <= MAX_NUMBER_LENGHT) {
 			amount += number.toString()
 			if (amount.isNotBlank()) {
-				amountTextView.text = "$$amount"
+				amountTextView.text = "${getString(R.string.currency)}$amount"
 			}
 		}
 	}
@@ -127,11 +131,19 @@ class NewTransactionActivity : AbstractFirestoreActivity(), NumberKeyboardView.O
 				it.subSequence(0, it.lastIndex).toString()
 			} else ""
 		}
-		amountTextView.text = if (amount.isNotBlank()) "$$amount" else ""
+		amountTextView.text = if (amount.isNotBlank()) "${getString(R.string.currency)}$amount" else ""
 	}
 
 	override fun onDonePressed() {
 		createNewTransaction(getTransaction())
+	}
+
+	private fun showInvalidAmountError() {
+		errorTextView.visibility = View.VISIBLE
+	}
+
+	private fun hideInvalidAmountError() {
+		errorTextView.visibility = View.INVISIBLE
 	}
 
 	private fun showLoading() {
@@ -148,3 +160,5 @@ class NewTransactionActivity : AbstractFirestoreActivity(), NumberKeyboardView.O
 		}
 	}
 }
+
+fun String.isValidAmount() = !this.matches(kotlin.text.Regex("^0+\$"))

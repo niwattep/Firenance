@@ -1,6 +1,5 @@
 package com.hobby.niwat.firenance.adapter
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,7 @@ import kotlinx.android.synthetic.main.view_transaction_item.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-open class TransactionAdapter(query: Query?, val context: Context?) : FirestoreAdapter<TransactionAdapter.TransactionViewHolder>(query) {
+open class TransactionAdapter(query: Query?) : FirestoreAdapter<TransactionAdapter.TransactionViewHolder>(query) {
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
 		return TransactionViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_transaction_item, parent, false))
 	}
@@ -26,18 +25,23 @@ open class TransactionAdapter(query: Query?, val context: Context?) : FirestoreA
 		fun bind(data: DocumentSnapshot, position: Int) {
 			val transaction = data.toObject(Transaction::class.java)
 			transaction?.let {
-				itemView.amountTextView.text = "$${it.amount}"
-				val date = SimpleDateFormat("EEEE dd 'at' HH:mm", Locale.US).format(it.timestamp)
-				itemView.dateTimeTextView.text = date
+				itemView.apply {
+					amountTextView.text = "${context.getString(R.string.currency)}${it.amount}"
 
-				if (it.note.isNotBlank()) {
-					itemView.noteLabelTextView.visibility = View.VISIBLE
-					itemView.noteTextView.visibility = View.VISIBLE
-					itemView.noteTextView.text = it.note
-				} else {
-					itemView.noteLabelTextView.visibility = View.GONE
-					itemView.noteTextView.visibility = View.GONE
+					val date = SimpleDateFormat("EEEE dd 'at' HH:mm", Locale.US).format(it.timestamp)
+					dateTimeTextView.text = date
+
+					if (it.note.isNotBlank()) {
+						noteLabelTextView.visibility = View.VISIBLE
+						noteTextView.visibility = View.VISIBLE
+						noteTextView.text = it.note
+					} else {
+						noteLabelTextView.visibility = View.GONE
+						noteTextView.visibility = View.GONE
+					}
 				}
+
+
 			}
 		}
 	}

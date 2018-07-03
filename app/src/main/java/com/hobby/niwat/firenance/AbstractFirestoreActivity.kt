@@ -46,4 +46,6 @@ abstract class AbstractFirestoreActivity : AppCompatActivity() {
 	protected fun isLogin() = FirebaseAuth.getInstance().currentUser != null
 
 	protected fun getFirebaseUser() = FirebaseAuth.getInstance().currentUser
+
+	protected fun logout() = FirebaseAuth.getInstance().signOut()
 }

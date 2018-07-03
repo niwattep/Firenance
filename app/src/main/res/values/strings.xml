@@ -17,4 +17,8 @@
     <string name="nine">9</string>
     <string name="zero">0</string>
     <string name="done">Done</string>
+    <string name="logout">Logout</string>
+
+    <string name="currency">฿</string>
+    <string name="invalid_amount">Invalid amount</string>
 </resources>

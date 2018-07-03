@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.MenuItem
+import android.view.Window
 import com.google.firebase.firestore.Query
 import com.hobby.niwat.firenance.adapter.TransactionAdapter
 import com.hobby.niwat.firenance.model.Transaction
@@ -36,6 +38,7 @@ class TransactionGroupActivity : AbstractFirestoreActivity() {
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
+		window.requestFeature(Window.FEATURE_CONTENT_TRANSITIONS)
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_transaction_group)
 
@@ -70,7 +73,7 @@ class TransactionGroupActivity : AbstractFirestoreActivity() {
 
 	override fun onBackPressed() {
 		super.onBackPressed()
-		finish()
+		finishAfterTransition()
 	}
 
 	private fun extractExtras() {
@@ -96,7 +99,7 @@ class TransactionGroupActivity : AbstractFirestoreActivity() {
 	}
 
 	private fun initRecyclerView() {
-		adapter = TransactionAdapter(query, this)
+		adapter = TransactionAdapter(query)
 
 		recyclerView.apply {
 			layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -129,10 +132,21 @@ class TransactionGroupActivity : AbstractFirestoreActivity() {
 
 	private fun fillHeader(transactionGroup: TransactionGroup?) {
 		transactionGroup?.let {
-			actualAmountText.text = it.actual?.let { "$$it" } ?: ""
+			actualAmountText.text = it.actual?.let { "${getString(R.string.currency)}$it" } ?: ""
 			actualAmountLabel.text = it.actualText ?: ""
-			targetAmountText.text = it.target?.let { "$$it" } ?: ""
+			targetAmountText.text = it.target?.let { "${getString(R.string.currency)}$it" } ?: ""
 			targetAmountLabel.text = it.targetText ?: ""
 		}
+	}
+
+	override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+		when (item?.itemId) {
+			R.id.home -> {
+				finishAfterTransition()
+				return true
+			}
+
+		}
+		return super.onOptionsItemSelected(item)
 	}
 }

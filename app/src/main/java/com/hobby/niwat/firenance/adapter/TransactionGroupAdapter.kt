@@ -1,6 +1,5 @@
 package com.hobby.niwat.firenance.adapter
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,7 @@ import com.hobby.niwat.firenance.TransactionGroupActivity
 import com.hobby.niwat.firenance.model.TransactionGroup
 import kotlinx.android.synthetic.main.view_transaction_summary_card.view.*
 
-open class TransactionGroupAdapter(query: Query?, val context: Context?, val userUid: String?) : FirestoreAdapter<TransactionGroupAdapter.TransactionGroupViewHolder>(query) {
+open class TransactionGroupAdapter(query: Query?, val userUid: String?) : FirestoreAdapter<TransactionGroupAdapter.TransactionGroupViewHolder>(query) {
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
 			TransactionGroupViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_transaction_summary_card, parent, false))
@@ -30,19 +29,22 @@ open class TransactionGroupAdapter(query: Query?, val context: Context?, val use
 				itemView.apply {
 					headerText.text = it.name ?: ""
 					actualAmountLabel.text = it.actualText ?: ""
-					actualAmountText.text = it.actual?.let { "$${it}" } ?: ""
+					actualAmountText.text = it.actual?.let { "${context.getString(R.string.currency)}${it}" } ?: ""
 					targetAmountLabel.text = it.targetText ?: ""
-					targetAmountText.text = it.target?.let { "$${it}" } ?: ""
+					targetAmountText.text = it.target?.let { "${context.getString(R.string.currency)}${it}" } ?: ""
 
 					val groupName = it.name
 					val groupValue = it.value
-					headerText.setOnClickListener {
+					itemView.setOnClickListener {
 						context.startActivity(TransactionGroupActivity.createIntent(context, docName, groupName, groupValue))
 					}
 
 					addButton.setOnClickListener {
 						context.startActivity(NewTransactionActivity.createIntent(context, groupValue, groupName, docName))
 					}
+
+					progressBar.max = it.target?.toFloat() ?: it.actual?.toFloat() ?: 0.0F
+					progressBar.progress = it.actual?.toFloat() ?: 0.0F
 				}
 			}
 		}
