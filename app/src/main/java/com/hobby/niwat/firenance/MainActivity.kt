@@ -101,8 +101,20 @@ class MainActivity : AbstractFirestoreActivity() {
 			R.id.logout -> {
 				logout()
 				startSignIn()
+				return true
 			}
 		}
 		return super.onOptionsItemSelected(item)
+	}
+
+	override fun onLoginSuccess() {
+		createQuery()
+		initRecyclerView()
+		getCurrentBalance()
+		adapter?.startListening()
+	}
+
+	override fun onLogoutSuccess() {
+		query = null
 	}
 }

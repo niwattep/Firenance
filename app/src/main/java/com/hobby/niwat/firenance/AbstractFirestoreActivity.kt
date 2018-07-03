@@ -27,6 +27,7 @@ abstract class AbstractFirestoreActivity : AppCompatActivity() {
 		val intent = AuthUI.getInstance().createSignInIntentBuilder()
 				.setAvailableProviders(listOf(AuthUI.IdpConfig.EmailBuilder().build()))
 				.setIsSmartLockEnabled(false)
+				.setLogo(R.drawable.firenance_logo)
 				.build()
 
 		startActivityForResult(intent, RC_SIGN_IN)
@@ -36,7 +37,9 @@ abstract class AbstractFirestoreActivity : AppCompatActivity() {
 		super.onActivityResult(requestCode, resultCode, data)
 		when (requestCode) {
 			RC_SIGN_IN -> {
-				if (resultCode != RESULT_OK && !isLogin()) {
+				if (resultCode == RESULT_OK && isLogin()) {
+					onLoginSuccess()
+				} else {
 					startSignIn()
 				}
 			}
@@ -47,5 +50,12 @@ abstract class AbstractFirestoreActivity : AppCompatActivity() {
 
 	protected fun getFirebaseUser() = FirebaseAuth.getInstance().currentUser
 
-	protected fun logout() = FirebaseAuth.getInstance().signOut()
+	protected fun logout() {
+		FirebaseAuth.getInstance().signOut()
+		onLogoutSuccess()
+	}
+
+	open fun onLoginSuccess() {}
+
+	open fun onLogoutSuccess() {}
 }
