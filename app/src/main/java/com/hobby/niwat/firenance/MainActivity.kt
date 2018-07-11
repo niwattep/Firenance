@@ -7,114 +7,119 @@ import android.view.Menu
 import android.view.MenuItem
 import com.google.firebase.firestore.Query
 import com.hobby.niwat.firenance.adapter.TransactionGroupAdapter
-import com.hobby.niwat.firenance.model.CommonUserStat
 import com.hobby.niwat.firenance.model.TransactionGroup
+import com.hobby.niwat.firenance.model.UserData
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AbstractFirestoreActivity() {
 
-	var adapter: TransactionGroupAdapter? = null
-	var query: Query? = null
+    var adapter: TransactionGroupAdapter? = null
+    var query: Query? = null
 
-	companion object {
-		private const val TAG = "MainActivity"
-	}
+    companion object {
+        private const val TAG = "MainActivity"
+    }
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_main)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-		setSupportActionBar(toolbar)
-		createQuery()
-		initRecyclerView()
-		getCurrentBalance()
-	}
+        setSupportActionBar(toolbar)
+        createQuery()
+        initRecyclerView()
+        getCurrentBalance()
+    }
 
-	override fun onStart() {
-		super.onStart()
-		if (!isLogin()) {
-			startSignIn()
-			return
-		}
+    override fun onStart() {
+        super.onStart()
+        if (!isLogin()) {
+            startSignIn()
+            return
+        }
 
-		adapter?.startListening()
-	}
+        adapter?.startListening()
+    }
 
-	override fun onStop() {
-		super.onStop()
-		adapter?.stopListening()
-	}
+    override fun onStop() {
+        super.onStop()
+        adapter?.stopListening()
+    }
 
-	private fun createQuery() {
-		getFirebaseUser()?.let {
-			val userUid = it.uid
-			firestore?.let {
-				query = it.collection(Database.COL_USERS)
-						.document(userUid)
-						.collection(Database.COL_TRANSACTION_GROUPS)
-						.orderBy(TransactionGroup.VALUE, Query.Direction.ASCENDING)
-			}
-		}
-	}
+    private fun createQuery() {
+        getFirebaseUser()?.let {
+            val userUid = it.uid
+            firestore?.let {
+                query = it.collection(Database.COL_USERS)
+                        .document(userUid)
+                        .collection(Database.COL_TRANSACTION_GROUPS)
+                        .orderBy(TransactionGroup.VALUE, Query.Direction.ASCENDING)
+            }
+        }
+    }
 
-	private fun initRecyclerView() {
-		adapter = TransactionGroupAdapter(query, getFirebaseUser()?.uid)
+    private fun initRecyclerView() {
+        adapter = TransactionGroupAdapter(query, getFirebaseUser()?.uid)
 
-		recyclerView.apply {
-			layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-			adapter = this@MainActivity.adapter
-		}
-	}
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            adapter = this@MainActivity.adapter
+        }
+    }
 
-	private fun getCurrentBalance() {
-		getFirebaseUser()?.let {
-			val userUid = it.uid
-			firestore?.let {
-				it.collection(Database.COL_USERS)
-						.document(userUid)
-						.addSnapshotListener { snapshot, e ->
-							if (e == null) {
-								fillBalance(snapshot?.toObject(CommonUserStat::class.java))
-							} else {
-								Log.e(TAG, "error getting current balance.")
-							}
-						}
-			}
-		}
-	}
+    private fun getCurrentBalance() {
+        getFirebaseUser()?.let {
+            val userUid = it.uid
+            firestore?.let {
+                it.collection(Database.COL_USERS)
+                        .document(userUid)
+                        .addSnapshotListener { snapshot, e ->
+                            if (e == null) {
+                                fillBalance(snapshot?.toObject(UserData::class.java))
+                            } else {
+                                Log.e(TAG, "error getting current balance.")
+                            }
+                        }
+            }
+        }
+    }
 
-	private fun fillBalance(userStat: CommonUserStat?) {
-		userStat?.let {
-			it.balance?.let {
-				balanceTextView.text = "${getString(R.string.currency)}${it}"
-			}
-		}
-	}
+    private fun fillBalance(userData: UserData?) {
+        userData?.let {
+            it.balance?.let {
+                if (it > 0) {
+                    balanceTextView.text = "${getString(R.string.currency)}${it.toStringAddCommas()}"
+                } else {
+                    balanceTextView.text = "-${getString(R.string.currency)}${(-it).toStringAddCommas()}"
+                }
 
-	override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-		menuInflater.inflate(R.menu.main_menu, menu)
-		return true
-	}
+            }
+        }
+    }
 
-	override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-		when (item?.itemId) {
-			R.id.logout -> {
-				logout()
-				startSignIn()
-				return true
-			}
-		}
-		return super.onOptionsItemSelected(item)
-	}
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
 
-	override fun onLoginSuccess() {
-		createQuery()
-		initRecyclerView()
-		getCurrentBalance()
-		adapter?.startListening()
-	}
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.logout -> {
+                logout()
+                startSignIn()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
-	override fun onLogoutSuccess() {
-		query = null
-	}
+    override fun onLoginSuccess() {
+        createQuery()
+        initRecyclerView()
+        getCurrentBalance()
+        adapter?.startListening()
+    }
+
+    override fun onLogoutSuccess() {
+        query = null
+    }
 }

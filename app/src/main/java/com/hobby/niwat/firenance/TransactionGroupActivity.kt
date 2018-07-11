@@ -15,138 +15,137 @@ import kotlinx.android.synthetic.main.activity_transaction_group.*
 
 class TransactionGroupActivity : AbstractFirestoreActivity() {
 
-	private var titleText: String? = ""
-	private var groupDocName: String? = ""
-	private var groupValue: Int? = 0
+    private var titleText: String? = ""
+    private var groupDocName: String? = ""
+    private var groupValue: Int? = 0
 
-	private var query: Query? = null
-	private var adapter: TransactionAdapter? = null
+    private var query: Query? = null
+    private var adapter: TransactionAdapter? = null
 
-	companion object {
-		private const val EXTRA_TRANSACTION_GROUP_DOC_NAME = "transaction-group-doc-name"
-		private const val EXTRA_TRANSACTION_GROUP_NAME = "transaction-group-name"
-		private const val EXTRA_TRANSACTION_GROUP_VALUE = "transaction-group-value"
-		private const val TAG = "TransactionGroupAct"
+    companion object {
+        private const val EXTRA_TRANSACTION_GROUP_DOC_NAME = "transaction-group-doc-name"
+        private const val EXTRA_TRANSACTION_GROUP_NAME = "transaction-group-name"
+        private const val EXTRA_TRANSACTION_GROUP_VALUE = "transaction-group-value"
+        private const val TAG = "TransactionGroupAct"
 
-		fun createIntent(context: Context, groupDocName: String?, groupName: String?, groupValue: Int?) = Intent(context, TransactionGroupActivity::class.java).apply {
-			putExtras(Bundle().apply {
-				groupDocName?.let { putString(EXTRA_TRANSACTION_GROUP_DOC_NAME, it) }
-				groupName?.let { putString(EXTRA_TRANSACTION_GROUP_NAME, it) }
-				groupValue?.let { putInt(EXTRA_TRANSACTION_GROUP_VALUE, it) }
-			})
-		}
-	}
+        fun createIntent(context: Context, groupDocName: String?, groupName: String?, groupValue: Int?) = Intent(context, TransactionGroupActivity::class.java).apply {
+            putExtras(Bundle().apply {
+                groupDocName?.let { putString(EXTRA_TRANSACTION_GROUP_DOC_NAME, it) }
+                groupName?.let { putString(EXTRA_TRANSACTION_GROUP_NAME, it) }
+                groupValue?.let { putInt(EXTRA_TRANSACTION_GROUP_VALUE, it) }
+            })
+        }
+    }
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		window.requestFeature(Window.FEATURE_CONTENT_TRANSITIONS)
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_transaction_group)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        window.requestFeature(Window.FEATURE_CONTENT_TRANSITIONS)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_transaction_group)
 
-		extractExtras()
+        extractExtras()
 
-		toolbar?.let {
-			setSupportActionBar(it)
-		}
+        toolbar?.let {
+            setSupportActionBar(it)
+        }
 
-		supportActionBar?.title = titleText
-		supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = titleText
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-		createQuery()
-		initRecyclerView()
-		loadTransactionGroup()
-	}
+        createQuery()
+        initRecyclerView()
+        loadTransactionGroup()
+    }
 
-	override fun onStart() {
-		super.onStart()
-		if (!isLogin()) {
-			startSignIn()
-			return
-		}
+    override fun onStart() {
+        super.onStart()
+        if (!isLogin()) {
+            startSignIn()
+            return
+        }
 
-		adapter?.startListening()
-	}
+        adapter?.startListening()
+    }
 
-	override fun onStop() {
-		super.onStop()
-		adapter?.stopListening()
-	}
+    override fun onStop() {
+        super.onStop()
+        adapter?.stopListening()
+    }
 
-	override fun onBackPressed() {
-		super.onBackPressed()
-		finishAfterTransition()
-	}
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finishAfterTransition()
+    }
 
-	private fun extractExtras() {
-		intent.extras.let {
-			titleText = it.getString(EXTRA_TRANSACTION_GROUP_NAME, "")
-			groupDocName = it.getString(EXTRA_TRANSACTION_GROUP_DOC_NAME, "")
-			groupValue = it.getInt(EXTRA_TRANSACTION_GROUP_VALUE, 0)
-		}
-	}
+    private fun extractExtras() {
+        intent.extras.let {
+            titleText = it.getString(EXTRA_TRANSACTION_GROUP_NAME, "")
+            groupDocName = it.getString(EXTRA_TRANSACTION_GROUP_DOC_NAME, "")
+            groupValue = it.getInt(EXTRA_TRANSACTION_GROUP_VALUE, 0)
+        }
+    }
 
-	private fun createQuery() {
-		getFirebaseUser()?.let {
-			val userUid = it.uid
-			firestore?.let {
-				query = it.collection(Database.COL_USERS)
-						.document(userUid)
-						.collection(Database.COL_TRANSACTION_GROUPS)
-						.document(groupDocName ?: "")
-						.collection(Database.COL_TRANSACTIONS)
-						.orderBy(Transaction.TIMESTAMP, Query.Direction.DESCENDING)
-			}
-		}
-	}
+    private fun createQuery() {
+        getFirebaseUser()?.let {
+            val userUid = it.uid
+            firestore?.let {
+                query = it.collection(Database.COL_USERS)
+                        .document(userUid)
+                        .collection(Database.COL_TRANSACTION_GROUPS)
+                        .document(groupDocName ?: "")
+                        .collection(Database.COL_TRANSACTIONS)
+                        .orderBy(Transaction.TIMESTAMP, Query.Direction.DESCENDING)
+            }
+        }
+    }
 
-	private fun initRecyclerView() {
-		adapter = TransactionAdapter(query)
+    private fun initRecyclerView() {
+        adapter = TransactionAdapter(query)
 
-		recyclerView.apply {
-			layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-			adapter = this@TransactionGroupActivity.adapter
-		}
-	}
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            adapter = this@TransactionGroupActivity.adapter
+        }
+    }
 
-	private fun loadTransactionGroup() {
-		getFirebaseUser()?.let {
-			val userUid = it.uid
-			groupDocName?.let {
-				val docName = it
-				firestore?.let {
-					it.collection(Database.COL_USERS)
-							.document(userUid)
-							.collection(Database.COL_TRANSACTION_GROUPS)
-							.document(docName)
-							.addSnapshotListener { snapshot, e ->
-								if (e == null) {
-									fillHeader(snapshot?.toObject(TransactionGroup::class.java))
-								} else {
-									Log.e(TAG, "error getting transaction group.")
-								}
-							}
-				}
-			}
+    private fun loadTransactionGroup() {
+        getFirebaseUser()?.let {
+            val userUid = it.uid
+            groupDocName?.let {
+                val docName = it
+                firestore?.let {
+                    it.collection(Database.COL_USERS)
+                            .document(userUid)
+                            .collection(Database.COL_TRANSACTION_GROUPS)
+                            .document(docName)
+                            .addSnapshotListener { snapshot, e ->
+                                if (e == null) {
+                                    fillHeader(snapshot?.toObject(TransactionGroup::class.java))
+                                } else {
+                                    Log.e(TAG, "error getting transaction group.")
+                                }
+                            }
+                }
+            }
+        }
+    }
 
-		}
-	}
+    private fun fillHeader(transactionGroup: TransactionGroup?) {
+        transactionGroup?.let {
+            actualAmountText.text = it.actual?.let { "${getString(R.string.currency)}${it.toStringAddCommas()}" } ?: ""
+            actualAmountLabel.text = it.actualText ?: ""
+            targetAmountText.text = it.target?.let { "${getString(R.string.currency)}${it.toStringAddCommas()}" } ?: ""
+            targetAmountLabel.text = it.targetText ?: ""
+        }
+    }
 
-	private fun fillHeader(transactionGroup: TransactionGroup?) {
-		transactionGroup?.let {
-			actualAmountText.text = it.actual?.let { "${getString(R.string.currency)}$it" } ?: ""
-			actualAmountLabel.text = it.actualText ?: ""
-			targetAmountText.text = it.target?.let { "${getString(R.string.currency)}$it" } ?: ""
-			targetAmountLabel.text = it.targetText ?: ""
-		}
-	}
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.home -> {
+                finishAfterTransition()
+                return true
+            }
 
-	override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-		when (item?.itemId) {
-			R.id.home -> {
-				finishAfterTransition()
-				return true
-			}
-
-		}
-		return super.onOptionsItemSelected(item)
-	}
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }
